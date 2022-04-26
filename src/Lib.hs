@@ -174,7 +174,7 @@ createHtml a text = do
 
 getHeaderNames text = getHeader (regularParse parseBody text)
 
-getPath text = "/" ++ trimRight text ++ ".html"
+getPath text = "/docs/" ++ trimRight text ++ ".html"
 -- getPath text =  trimRight text ++ ".html"
 
 getFilePath text = "." ++ getPath text
