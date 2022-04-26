@@ -7,7 +7,7 @@ module Lib
 , regularParse
 ) where
 
-
+import Data.Char (isSpace)
 import Text.Parsec (parse, try, Parsec)
 import Text.Parsec.Combinator (many1, count, choice, optional, optionMaybe, notFollowedBy, lookAhead, eof, anyToken, manyTill)
 import Text.Parsec.Char (satisfy)
@@ -19,7 +19,7 @@ import Control.Monad (void, guard)
 import Debug.Trace (trace)
 import Text.Parsec (ParseError, oneOf)
 import Text.Parsec.Prim (runP)
-import Data.List (intersperse)
+import Data.List (intersperse,dropWhileEnd)
 import Data.Char ( intToDigit )
 import System.FilePath ( (</>) )
 import System.Directory
@@ -174,9 +174,11 @@ createHtml a text = do
 
 getHeaderNames text = getHeader (regularParse parseBody text)
 
-getPath text = "/docs/" ++ text ++ ".html"
+-- getPath text = "/docs/" ++ trimRight text ++ ".html"
+getPath text =  trimRight text ++ ".html"
 
-getFilePath text = "." ++ getPath text
+-- getFilePath text = "." ++ getPath text
+getFilePath text =  getPath text
 
 readPath p a = p ++ a
 
@@ -187,6 +189,11 @@ getHtmlContentList contents = [createIndexhtml (map getHeaderNames contents)] ++
 createDocFile path content= do
   createDirectoryIfMissing True $ takeDirectory path
   writeFile path content
+
+trimRight :: String -> String
+trimRight = dropWhileEnd isSpace
+
+
 
 createHtmlFiles = do
   let read_path = "./files/"
