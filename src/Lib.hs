@@ -7,7 +7,7 @@ module Lib
 , regularParse
 ) where
 
-import Data.Char (isSpace)
+
 import Text.Parsec (parse, try, Parsec)
 import Text.Parsec.Combinator (many1, count, choice, optional, optionMaybe, notFollowedBy, lookAhead, eof, anyToken, manyTill)
 import Text.Parsec.Char (satisfy)
@@ -19,12 +19,13 @@ import Control.Monad (void, guard)
 import Debug.Trace (trace)
 import Text.Parsec (ParseError, oneOf)
 import Text.Parsec.Prim (runP)
-import Data.List (intersperse,dropWhileEnd)
+import Data.List (intersperse)
 import Data.Char ( intToDigit )
 import System.FilePath ( (</>) )
 import System.Directory
 import Data.Text (pack, Text)
 import System.FilePath.Posix (takeDirectory)
+import Data.Bits (Bits(xor))
 
 data Block
   = Paragraph [Block]
@@ -148,7 +149,7 @@ getDirFiles inputDir =
 -- createHtmlFile text = gethtml $ regularParse parseBody text
 
 createSidebar [] = "" 
-createSidebar (x:xs) = "<a href=" ++ getPath x ++ " class='w3-bar-item w3-button'>" ++  x ++ "</a>" ++ createSidebar xs
+createSidebar (x:xs) = "<a href=" ++ getPath "./" x ++ " class='w3-bar-item w3-button'>" ++  x ++ "</a>" ++ createSidebar xs
 
 createIndexhtml a = do 
   let head = "<!DOCTYPE html><html> \
@@ -174,26 +175,19 @@ createHtml a text = do
 
 getHeaderNames text = getHeader (regularParse parseBody text)
 
-getPath text = "/docs/" ++ trimRight text ++ ".html"
--- getPath text =  trimRight text ++ ".html"
+removeBlanks x = filter (\xs -> (xs /= ' ')) x
 
-getFilePath text = "." ++ getPath text
-
+getPath a text = a ++ removeBlanks text ++ ".html"
 
 readPath p a = p ++ a
 
-getFilePathList contents = [getFilePath "index"] ++ (map getFilePath (map getHeaderNames contents))
+getFilePathList contents = [getPath  "./docs/" "index"] ++ (map (getPath "./docs/") (map getHeaderNames contents))
 
 getHtmlContentList contents = [createIndexhtml (map getHeaderNames contents)] ++ (map (createHtml (map getHeaderNames contents)) contents)
 
 createDocFile path content= do
   createDirectoryIfMissing True $ takeDirectory path
   writeFile path content
-
-trimRight :: String -> String
-trimRight = dropWhileEnd isSpace
-
-
 
 createHtmlFiles = do
   let read_path = "./files/"
