@@ -4,6 +4,6 @@ introduction content
 
 use next line to check
 
-** testing bold **
+starting sentence to test bold ** testing bold ** within a sentece 
 
-* testig italics *
+staring italics * testig italics *
