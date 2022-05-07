@@ -31,6 +31,8 @@ data Block
   = Paragraph [Block]
   | Text String
   | Heading Int [Block]
+  | Italic [Block]
+  | Bold [Block]
   deriving (Show, Eq)
 
 type Parser = Parsec String String
@@ -42,17 +44,25 @@ parseText :: Parser Block
 parseText = do
   line1 <- parseLine
   rest <- many parseNewLine
-  return $ Text (concat $ line1:rest)
+  return $ Text (unwords $ line1:rest)
 
 parseLine :: Parser String
 parseLine = do
   void $ many (char ' ') -- Spaces at the beginning of a line are ignored
-  first <- letter <|> char ' ' -- First char must be a letter or a character
-  rest <- many (letter <|> char ' ')
+  line <- many1 (noneOf (['\n', '*'])) -- First char must be a letter or a character
   newline <- optionMaybe $ char '\n'
   return $ case newline of
-    Just _ -> first:rest ++ " "
-    Nothing -> first:rest
+    Just _ -> line ++ ""
+    Nothing -> line
+
+parseItalic = between' delimiter delimiter parseText >>= return . Italic
+  where delimiter = count 1 $ char '*'
+
+
+parseBold = between' delimiter delimiter parseText >>= return . Bold
+  where delimiter = count 2 $ char '*'
+
+between' a b c = a *> manyTill c (try b)
 
 parseNewLine :: Parser String
 parseNewLine = do
@@ -68,7 +78,7 @@ parseNewLine = do
 parseParagraph :: Parser Block
 parseParagraph = do
   choice [void $ many (char '\n'), void $ eof]
-  blocks <- many1 parseText
+  blocks <- many1 $ choice [try parseBold, parseItalic, parseText]
   choice [void $ many (char '\n'), void $ eof]
   return $ Paragraph blocks
 
@@ -96,6 +106,8 @@ regularParse p = runP p "" ""
 tohtml [] = ""
 tohtml ((Text a): xs) = a ++ tohtml xs
 tohtml ((Paragraph b): xs) = "<p>" ++ tohtml b ++ "</p>" ++ tohtml xs
+tohtml ((Italic b): xs) = "<em>" ++ tohtml b ++ "</em>" ++ tohtml xs
+tohtml ((Bold b): xs) = "<strong>" ++ tohtml b ++ "</strong>" ++ tohtml xs
 tohtml ((Heading a b): xs) = "<h" ++ [intToDigit a] ++ ">" ++ tohtml b ++ "</h" ++ [intToDigit a] ++ ">" ++ tohtml xs
 
 
@@ -128,7 +140,7 @@ mainheadername = do
 
 main :: IO ()
 main = do
-  text <- readFile "test_markdown/test.md"
+  text <- readFile "test_markdown/test1.md"
   print $ regularParse parseBody text
 
 maintohtml :: IO ()
