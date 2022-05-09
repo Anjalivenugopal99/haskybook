@@ -1,3 +1,5 @@
-## Conclusion 
+## Introduction
 
-This is a test page for haskybook application
+If it isn’t written down, it could be forgotten or overlooked. Documentation does have a role to play in project management, however. The reality is that documentation can save the day in many cases when a question or conflict arises during or even after the project’s completion. However, you decide to document the projects you manage, finding the right balance between thorough and time-sucking is key to the process. A software solution will not be helpful if it is cumbersome to use and doesn’t save you time. Here we propose an easy solution to the note taking process which lets you build an online book using a collection of markdown files. There will be a command line interface to quickly create build and upgrade notes. 
+
+The main goal of this work is to implement an application to create HTML files for static webpage documents written in markdown syntax. We hope this will be an easy user-friendly documentation generator from markdown files. The user needs to give a content markdown file which lists out the pages of the documentation. Every other file will be converted to HTML pages and titles will be automatically linked to contents, and available as a sidebar thus creating a web-based documentation book.
