@@ -5,6 +5,10 @@ module Lib
 , Block(..)
 , Parser
 , regularParse
+, getFilePathList
+, getHtmlContentList
+, createDocFile
+, readPath
 ) where
 
 
@@ -134,23 +138,23 @@ getHeader (Right a) = readHeader a
 ---------------------------------------------
 mainheadername :: IO ()
 mainheadername = do
-  text <- readFile "test_markdown/test1.md"
+  text <- readFile "files/test.md"
   print $ getHeader $ regularParse parseBody text
 -----------------------------------
 
 main :: IO ()
 main = do
-  text <- readFile "test_markdown/test1.md"
+  text <- readFile "files/test.md"
   print $ regularParse parseBody text
 
 maintohtml :: IO ()
 maintohtml = do
-  text <- readFile "test_markdown/test.md"
+  text <- readFile "files/test.md"
   print $ gethtml $ regularParse parseBody text
 
 mainwritehtml :: IO ()
 mainwritehtml = do
-  text <- readFile "test_markdown/test.md"
+  text <- readFile "files/test.md"
   writeFile "test_html/testhtml.html" $ gethtml $ regularParse parseBody text
 
 --------------------------
@@ -161,7 +165,7 @@ getDirFiles inputDir =
 -- createHtmlFile text = gethtml $ regularParse parseBody text
 
 createSidebar [] = "" 
-createSidebar (x:xs) = "<a href=" ++ getPath "./" x ++ " class='w3-bar-item w3-button'>" ++  x ++ "</a>" ++ createSidebar xs
+createSidebar (x:xs) = "<div class = 'active'> <a href=" ++ getPath "./" x ++ ">" ++  x ++ "</a></div>" ++ createSidebar xs
 
 createIndexhtml a = do 
   let head = "<!DOCTYPE html><html> \
@@ -174,15 +178,93 @@ createIndexhtml a = do
   head ++ sidebar_head ++ createSidebar a ++ sidebar_tail
 
 createHtml a text = do
-  let head = "<!DOCTYPE html><html> \
-  \ <title>HaskyBook</title><meta name='viewport' content='width=device-width, initial-scale=1'> \
-  \ <link rel='stylesheet' href='https://www.w3schools.com/w3css/4/w3.css'> \
-  \ <body>"
-  let sidebar_head = "<div class='w3-sidebar w3-light-grey w3-bar-block' style='width:25%'> \
-  \ <h3 class='w3-bar-item'>Contents</h3>"
-  let sidebar_tail = "</div>\
-  \ <div style='margin-left:25%'>"
-  let tail = "</div>"
+  let head = "<!DOCTYPE html><html>  <title>HaskyBook</title><meta name='viewport' content='width=device-width, initial-scale=1'> \
+ \ <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet' integrity='sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3' crossorigin='anonymous'> \
+\ <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js' integrity='sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p' crossorigin='anonymous'></script> \
+ \ <style> \
+\ @import 'https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700'; \ 
+\ body { \ 
+\    font-family: 'Poppins', sans-serif; \
+\    background: #fafafa; \
+\} \
+\p { \
+\    font-family: 'Poppins', sans-serif;\
+\   font-size: 1.1em;\
+\   font-weight: 300;\
+\   line-height: 1.7em;\
+\   color: #999;\
+\}\
+
+\a,\
+\a:hover,\
+\a:focus {\
+\    color: inherit;\
+\   text-decoration: none;\
+\   transition: all 0.3s;\
+\}\
+
+
+\/* ---------------------------------------------------\
+  \  SIDEBAR STYLE\
+\----------------------------------------------------- */\
+
+\.wrapper {\
+ \   display: flex;\
+  \  width: 100%;\
+   \ align-items: stretch;\
+   \ height: 100%;\
+    
+\}\
+
+\#sidebar {\
+    \min-width: 250px;\
+    \max-width: 250px;\
+    \background: #7386D5;\
+    \color: #fff;\
+    \transition: all 0.3s;\
+    \align-items: stretch;\
+\}\
+
+\#sidebar.active {\
+  \  margin-left: -250px;\
+   \ padding: 20px;\
+ \   height: 100%;\
+\}\
+
+\#sidebar .sidebar-header {\
+\    padding: 20px;\
+ \   background: #6d7fcc;\
+\}\
+
+\#sidebar a {\
+    \padding: 10px;\
+    \font-size: 1.1em;\
+    \display: block;\
+\}\
+
+\#sidebar a:hover {\
+    \color: #7386D5;\
+    \background: #fff;\
+    \padding: 20px;\
+\}\
+
+\.content {\
+    \width: 100%;\
+    \padding: 50px;\
+    \min-height: 100vh;\
+    \transition: all 0.3s;\
+    \margin-left:3%;\
+    \margin-top:5%;\
+\}\
+
+\</style> \
+\<body>"
+  let sidebar_head = "<div class='wrapper'>\
+\<nav id='sidebar'>\
+ \<h3 class='sidebar-header'>Contents</h3>"
+  let sidebar_tail = "</nav>\
+ \<div class='content'>"
+  let tail = "</div></div>"
   head ++ sidebar_head ++ createSidebar a ++ sidebar_tail ++ (gethtml $ regularParse parseBody text) ++ tail
 
 getHeaderNames text = getHeader (regularParse parseBody text)

@@ -1,4 +1,3 @@
-## Next Steps 
+## Conclusion
 
-Next I will try incorporating some design aspects by adding a css to the website. 
-Further syntax parsings like images and bullets will be incorporated at this point. 
+Haskell is an excellent language for all parsing needs. Since the language is so well suited for parsing there are different libraries out there. There is other software available which generate static sites, mostly aimed at small to medium sites and personal blogs. Hakyll is one of those which build based on the Haskell for static sites generation like Jekyll. This is a library which is written in very configurable way and uses anXmonad like DSL for configuration. This is not user friendly, and it provides a lot of additional features which make it cumbersome to use. Here we provide an application where user can directly create a documentation book framework from their markdown notes which can be easily uploaded in GitHub pages. For our application, the user would not require any additional coding skills. 
